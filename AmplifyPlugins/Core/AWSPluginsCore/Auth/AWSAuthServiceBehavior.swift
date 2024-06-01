@@ -11,7 +11,7 @@ import AWSClientRuntime
 
 public protocol AWSAuthServiceBehavior: AnyObject {
 
-    func getCredentialsProvider() -> CredentialsProviding
+    func getAWSCredentialIdentityResolver() -> any AWSCredentialIdentityResolver
 
     func getTokenClaims(tokenString: String) -> Result<[String: AnyObject], AuthError>
 

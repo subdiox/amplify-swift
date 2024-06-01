@@ -28,10 +28,9 @@ public class MockAWSAuthService: AWSAuthServiceBehavior {
         interactions.append(#function)
     }
 
-    public func getCredentialsProvider() -> CredentialsProviding {
+    public func getAWSCredentialIdentityResolver() -> any AWSCredentialIdentityResolver {
         interactions.append(#function)
-        let cognitoCredentialsProvider = MyCustomCredentialsProvider()
-        return cognitoCredentialsProvider
+        return MyCustomCredentialIdentityResolver()
     }
 
     public func getIdentityID() async throws -> String {
@@ -61,11 +60,11 @@ public class MockAWSAuthService: AWSAuthServiceBehavior {
     }
 }
 
-struct MyCustomCredentialsProvider: CredentialsProviding {
-    func getCredentials() async throws -> AWSClientRuntime.AWSCredentials {
-        AWSCredentials(
+struct MyCustomCredentialIdentityResolver: AWSCredentialIdentityResolver {
+    func getIdentity(identityProperties: Attributes? = nil) async throws -> AWSCredentialIdentity {
+        AWSCredentialIdentity(
             accessKey: "AKIDEXAMPLE",
             secret: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
-            expirationTimeout: Date().addingTimeInterval(30))
+            expiration: Date().addingTimeInterval(30))
     }
 }

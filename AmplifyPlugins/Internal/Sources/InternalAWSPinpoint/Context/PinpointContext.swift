@@ -76,18 +76,18 @@ struct PinpointContextConfiguration {
     /// The Pinpoint region
     let region: String
     /// Used to retrieve the proper AWSCredentials when creating the PinpointCLient
-    let credentialsProvider: CredentialsProviding
+    let awsCredentialIdentityResolver: any AWSCredentialIdentityResolver
     /// Indicates if the App is in Debug or Release build. Defaults to `false`
     /// Setting this flag to true will set the Endpoint Profile to have a channel type of "APNS_SANDBOX".
     let isDebug: Bool
 
     init(appId: String,
          region: String,
-         credentialsProvider: CredentialsProviding,
+         awsCredentialIdentityResolver: some AWSCredentialIdentityResolver,
          isDebug: Bool = false) {
         self.appId = appId
         self.region = region
-        self.credentialsProvider = credentialsProvider
+        self.awsCredentialIdentityResolver = awsCredentialIdentityResolver
         self.isDebug = isDebug
     }
 }
@@ -123,8 +123,7 @@ class PinpointContext {
                                          archiver: archiver)
         uniqueId = Self.retrieveUniqueId(applicationId: configuration.appId, storage: storage)
 
-        let pinpointClient = try PinpointClient(region: configuration.region,
-                                                credentialsProvider: configuration.credentialsProvider)
+        let pinpointClient = try PinpointClient(region: configuration.region)
 
         endpointClient = EndpointClient(configuration: .init(appId: configuration.appId,
                                                              uniqueDeviceId: uniqueId,

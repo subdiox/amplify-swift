@@ -8,15 +8,15 @@
 import Amplify
 import AWSClientRuntime
 import AwsCommonRuntimeKit
+import ClientRuntime
 import Foundation
 
-public class AmplifyAWSCredentialsProvider: AWSClientRuntime.CredentialsProviding {
-
-    public func getCredentials() async throws -> AWSClientRuntime.AWSCredentials {
+public class AmplifyAWSCredentialsProvider: AWSCredentialIdentityResolver {
+    public func getIdentity(identityProperties: Attributes?) async throws -> AWSCredentialIdentity {
         let authSession = try await Amplify.Auth.fetchAuthSession()
         if let awsCredentialsProvider = authSession as? AuthAWSCredentialsProvider {
             let credentials = try awsCredentialsProvider.getAWSCredentials().get()
-            return credentials.toAWSSDKCredentials()
+            return credentials.toAWSCredentialIdentity()
         } else {
             let error = AuthError.unknown("Auth session does not include AWS credentials information")
             throw error
@@ -25,20 +25,20 @@ public class AmplifyAWSCredentialsProvider: AWSClientRuntime.CredentialsProvidin
 }
 
 extension AWSCredentials {
-
-    func toAWSSDKCredentials() -> AWSClientRuntime.AWSCredentials {
+    func toAWSCredentialIdentity() -> AWSCredentialIdentity {
         if let tempCredentials = self as? AWSTemporaryCredentials {
-            return AWSClientRuntime.AWSCredentials(
+            return AWSCredentialIdentity(
                 accessKey: tempCredentials.accessKeyId,
                 secret: tempCredentials.secretAccessKey,
-                expirationTimeout: tempCredentials.expiration,
-                sessionToken: tempCredentials.sessionToken)
+                expiration: tempCredentials.expiration,
+                sessionToken: tempCredentials.sessionToken
+            )
         } else {
-            return AWSClientRuntime.AWSCredentials(
+            return AWSCredentialIdentity(
                 accessKey: accessKeyId,
                 secret: secretAccessKey,
-                expirationTimeout: Date())
+                expiration: Date()
+            )
         }
-
     }
 }

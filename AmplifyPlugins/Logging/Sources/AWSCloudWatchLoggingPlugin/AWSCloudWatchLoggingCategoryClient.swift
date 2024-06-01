@@ -26,7 +26,7 @@ final class AWSCloudWatchLoggingCategoryClient {
     private let lock = NSLock()
     private let logGroupName: String
     private let region: String
-    private let credentialsProvider: CredentialsProviding
+    private let awsCredentialIdentityResolver: any AWSCredentialIdentityResolver
     private let authentication: AuthCategoryUserBehavior
     private var loggersByKey: [LoggerKey: AWSCloudWatchLoggingSessionController] = [:]
     private let localStoreMaxSizeInMB: Int
@@ -38,7 +38,7 @@ final class AWSCloudWatchLoggingCategoryClient {
 
     init(
         enable: Bool,
-        credentialsProvider: CredentialsProviding,
+        awsCredentialIdentityResolver: some AWSCredentialIdentityResolver,
         authentication: AuthCategoryUserBehavior,
         loggingConstraintsResolver: AWSCloudWatchLoggingConstraintsResolver,
         logGroupName: String,
@@ -48,7 +48,7 @@ final class AWSCloudWatchLoggingCategoryClient {
         networkMonitor: LoggingNetworkMonitor = NWPathMonitor()
     ) {
         self.enabled = enable
-        self.credentialsProvider = credentialsProvider
+        self.awsCredentialIdentityResolver = awsCredentialIdentityResolver
         self.authentication = authentication
         self.logGroupName = logGroupName
         self.region = region
@@ -145,7 +145,7 @@ extension AWSCloudWatchLoggingCategoryClient: LoggingCategoryClientBehavior {
                 return existing
             }
 
-            let controller = AWSCloudWatchLoggingSessionController(credentialsProvider: credentialsProvider,
+            let controller = AWSCloudWatchLoggingSessionController(awsCredentialIdentityResolver: awsCredentialIdentityResolver,
                                                                    authentication: authentication,
                                                                    logFilter: self.logFilter,
                                                                    category: category,

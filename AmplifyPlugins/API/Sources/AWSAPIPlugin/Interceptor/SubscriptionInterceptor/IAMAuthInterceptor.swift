@@ -13,11 +13,11 @@ import ClientRuntime
 
 class IAMAuthInterceptor {
 
-    let authProvider: CredentialsProviding
+    let awsCredentialIdentityResolver: any AWSCredentialIdentityResolver
     let region: AWSRegionType
 
-    init(_ authProvider: CredentialsProviding, region: AWSRegionType) {
-        self.authProvider = authProvider
+    init(_ awsCredentialIdentityResolver: some AWSCredentialIdentityResolver, region: AWSRegionType) {
+        self.awsCredentialIdentityResolver = awsCredentialIdentityResolver
         self.region = region
     }
 
@@ -49,11 +49,13 @@ class IAMAuthInterceptor {
         /// 2. The request is SigV4 signed by using all the available headers on the request. By signing the request, the signature is added to
         /// the request headers as authorization and security token.
         do {
-            guard let urlRequest = try await signer.sigV4SignedRequest(requestBuilder: requestBuilder,
-                                                                 credentialsProvider: authProvider,
-                                                                 signingName: "appsync",
-                                                                 signingRegion: region,
-                                                                 date: Date()) else {
+            guard let urlRequest = try await signer.sigV4SignedRequest(
+                requestBuilder: requestBuilder,
+                awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+                signingName: "appsync",
+                signingRegion: region,
+                date: Date()
+            ) else {
                 Amplify.Logging.error("Unable to sign request")
                 return nil
             }

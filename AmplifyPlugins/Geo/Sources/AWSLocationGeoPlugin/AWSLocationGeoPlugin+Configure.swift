@@ -36,15 +36,15 @@ extension AWSLocationGeoPlugin {
     /// Configure AWSLocationPlugin programatically using AWSLocationPluginConfiguration
     public func configure(using configuration: AWSLocationGeoPluginConfiguration) throws {
         let authService = AWSAuthService()
-        let credentialsProvider = authService.getCredentialsProvider()
+        let awsCredentialIdentityResolver = authService.getAWSCredentialIdentityResolver()
         let region = configuration.regionName
         // TODO: FrameworkMetadata Replacement
         let serviceConfiguration = try LocationClient.LocationClientConfiguration(
-            region: region,
-            credentialsProvider: credentialsProvider
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+            region: region
         )
 
-        serviceConfiguration.httpClientEngine = .userAgentEngine(for: serviceConfiguration)
+        serviceConfiguration.httpClientEngine = .userAgentEngine
 
         let location = LocationClient(config: serviceConfiguration)
         let locationService = AWSLocationAdapter(location: location)

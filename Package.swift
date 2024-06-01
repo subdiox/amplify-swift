@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:5.10
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 import PackageDescription
 
@@ -9,7 +9,7 @@ let platforms: [SupportedPlatform] = [
     .watchOS(.v9)
 ]
 let dependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/awslabs/aws-sdk-swift.git", exact: "0.36.2"),
+    .package(url: "https://github.com/subdiox/aws-sdk-swift.git", exact: "0.44.0"),
     .package(url: "https://github.com/stephencelis/SQLite.swift.git", exact: "0.15.3"),
     .package(url: "https://github.com/mattgallagher/CwlPreconditionTesting.git", from: "2.1.0"),
     .package(url: "https://github.com/aws-amplify/amplify-swift-utils-notifications.git", from: "1.1.0")
@@ -39,7 +39,8 @@ let amplifyTargets: [Target] = [
         ],
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .target(
         name: "AmplifyTestCommon",
@@ -58,7 +59,8 @@ let amplifyTargets: [Target] = [
             "Models/Collection/connection-schema.graphql",
             "Models/TransformerV2/schema.graphql",
             "Models/CustomPrimaryKey/primarykey_schema.graphql"
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AmplifyTests",
@@ -71,7 +73,8 @@ let amplifyTargets: [Target] = [
         exclude: [
             "Info.plist",
             "CoreTests/README.md"
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .target(
         name: "AmplifyAsyncTesting",
@@ -94,7 +97,8 @@ let amplifyTargets: [Target] = [
         path: "AmplifyPlugins/Core/AWSPluginsTestCommon",
         exclude: [
             "Info.plist"
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSPluginsCoreTests",
@@ -106,7 +110,8 @@ let amplifyTargets: [Target] = [
         path: "AmplifyPlugins/Core/AWSPluginsCoreTests",
         exclude: [
             "Info.plist"
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -124,7 +129,8 @@ let apiTargets: [Target] = [
         ],
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSAPIPluginTests",
@@ -137,7 +143,8 @@ let apiTargets: [Target] = [
         path: "AmplifyPlugins/API/Tests/AWSAPIPluginTests",
         exclude: [
             "Info.plist"
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -153,7 +160,8 @@ let authTargets: [Target] = [
         dependencies: [
             .target(name: "AmplifyBigInteger")
         ],
-        path: "AmplifyPlugins/Auth/Sources/AmplifySRP"
+        path: "AmplifyPlugins/Auth/Sources/AmplifySRP",
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .target(
         name: "AWSCognitoAuthPlugin",
@@ -168,7 +176,8 @@ let authTargets: [Target] = [
         path: "AmplifyPlugins/Auth/Sources/AWSCognitoAuthPlugin",
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .target(
         name: "libtommathAmplify",
@@ -177,7 +186,8 @@ let authTargets: [Target] = [
             "changes.txt",
             "LICENSE",
             "README.md"
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSCognitoAuthPluginUnitTests",
@@ -187,14 +197,16 @@ let authTargets: [Target] = [
             "AmplifyTestCommon"
         ],
         path: "AmplifyPlugins/Auth/Tests/AWSCognitoAuthPluginUnitTests",
-        resources: [.copy("TestResources")]
+        resources: [.copy("TestResources")],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AmplifyBigIntegerTests",
         dependencies: [
             "AmplifyBigInteger"
         ],
-        path: "AmplifyPlugins/Auth/Tests/AmplifyBigIntegerUnitTests"
+        path: "AmplifyPlugins/Auth/Tests/AmplifyBigIntegerUnitTests",
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -212,7 +224,8 @@ let dataStoreTargets: [Target] = [
         ],
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSDataStoreCategoryPluginTests",
@@ -224,7 +237,8 @@ let dataStoreTargets: [Target] = [
         path: "AmplifyPlugins/DataStore/Tests/AWSDataStorePluginTests",
         exclude: [
             "Info.plist"
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -241,7 +255,8 @@ let storageTargets: [Target] = [
         ],
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSS3StoragePluginTests",
@@ -254,7 +269,8 @@ let storageTargets: [Target] = [
         path: "AmplifyPlugins/Storage/Tests/AWSS3StoragePluginTests",
         exclude: [
             "Resources/Info.plist"
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -271,7 +287,8 @@ let geoTargets: [Target] = [
         ],
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSLocationGeoPluginTests",
@@ -284,7 +301,8 @@ let geoTargets: [Target] = [
         exclude: [
             "Resources/Info.plist"
         ],
-        resources: []
+        resources: [],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -297,12 +315,14 @@ let internalPinpointTargets: [Target] = [
             .target(name: "AWSPluginsCore"),
             .product(name: "SQLite", package: "SQLite.swift"),
             .product(name: "AWSPinpoint", package: "aws-sdk-swift"),
+            .product(name: "AWSCloudWatchEvents", package: "aws-sdk-swift"),
             .product(name: "AmplifyUtilsNotifications", package: "amplify-swift-utils-notifications")
         ],
         path: "AmplifyPlugins/Internal/Sources/InternalAWSPinpoint",
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "InternalAWSPinpointUnitTests",
@@ -311,7 +331,8 @@ let internalPinpointTargets: [Target] = [
             "AmplifyTestCommon",
             "AmplifyAsyncTesting"
         ],
-        path: "AmplifyPlugins/Internal/Tests/InternalAWSPinpointUnitTests"
+        path: "AmplifyPlugins/Internal/Tests/InternalAWSPinpointUnitTests",
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -332,7 +353,8 @@ let analyticsTargets: [Target] = [
             "AWSPinpointAnalyticsPlugin",
             "AmplifyTestCommon"
         ],
-        path: "AmplifyPlugins/Analytics/Tests/AWSPinpointAnalyticsPluginUnitTests"
+        path: "AmplifyPlugins/Analytics/Tests/AWSPinpointAnalyticsPluginUnitTests",
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -345,7 +367,8 @@ let pushNotificationsTargets: [Target] = [
         path: "AmplifyPlugins/Notifications/Push/Sources/AWSPinpointPushNotificationsPlugin",
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSPinpointPushNotificationsPluginUnitTests",
@@ -353,7 +376,8 @@ let pushNotificationsTargets: [Target] = [
             "AWSPinpointPushNotificationsPlugin",
             "AmplifyTestCommon"
         ],
-        path: "AmplifyPlugins/Notifications/Push/Tests/AWSPinpointPushNotificationsPluginUnitTests"
+        path: "AmplifyPlugins/Notifications/Push/Tests/AWSPinpointPushNotificationsPluginUnitTests",
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -375,13 +399,15 @@ let predictionsTargets: [Target] = [
         exclude: [],
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSPredictionsPluginUnitTests",
         dependencies: ["AWSPredictionsPlugin"],
         path: "AmplifyPlugins/Predictions/Tests/AWSPredictionsPluginUnitTests",
-        resources: [.copy("TestResources/TestImages") ]
+        resources: [.copy("TestResources/TestImages") ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .target(
         name: "CoreMLPredictionsPlugin",
@@ -394,7 +420,8 @@ let predictionsTargets: [Target] = [
         ],
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "CoreMLPredictionsPluginUnitTests",
@@ -403,7 +430,8 @@ let predictionsTargets: [Target] = [
             "AmplifyTestCommon"
         ],
         path: "AmplifyPlugins/Predictions/Tests/CoreMLPredictionsPluginUnitTests",
-        resources: [.copy("TestResources/TestImages")]
+        resources: [.copy("TestResources/TestImages")],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 
@@ -418,7 +446,8 @@ let loggingTargets: [Target] = [
         path: "AmplifyPlugins/Logging/Sources/AWSCloudWatchLoggingPlugin",
         resources: [
             .copy("Resources/PrivacyInfo.xcprivacy")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     ),
     .testTarget(
         name: "AWSCloudWatchLoggingPluginTests",
@@ -430,7 +459,8 @@ let loggingTargets: [Target] = [
         path: "AmplifyPlugins/Logging/Tests/AWSCloudWatchLoggingPluginTests",
         resources: [
             .copy("TestResources")
-        ]
+        ],
+        swiftSettings: [.interoperabilityMode(.Cxx)]
     )
 ]
 

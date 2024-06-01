@@ -11,14 +11,14 @@ import AWSPinpoint
 @_spi(PluginHTTPClientEngine) import AWSPluginsCore
 
 extension PinpointClient {
-    convenience init(region: String, credentialsProvider: CredentialsProviding) throws {
+    convenience init(region: String, awsCredentialIdentityResolver: some AWSCredentialIdentityResolver) throws {
         // TODO: FrameworkMetadata Replacement
         let configuration = try PinpointClientConfiguration(
-            region: region,
-            credentialsProvider: credentialsProvider
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+            region: region
         )
 
-        configuration.httpClientEngine = .userAgentEngine(for: configuration)
+        configuration.httpClientEngine = .userAgentEngine
         PinpointRequestsRegistry.shared.setCustomHttpEngine(on: configuration)
         self.init(config: configuration)
     }

@@ -31,58 +31,48 @@ class AWSPredictionsService {
 
     convenience init(
         configuration: PredictionsPluginConfiguration,
-        credentialsProvider: CredentialsProviding,
+        awsCredentialIdentityResolver: some AWSCredentialIdentityResolver,
         identifier: String
     ) throws {
         let translateClientConfiguration = try TranslateClient.TranslateClientConfiguration(
-            region: configuration.convert.region,
-            credentialsProvider: credentialsProvider
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+            region: configuration.convert.region
         )
-        translateClientConfiguration.httpClientEngine = .userAgentEngine(
-            for: translateClientConfiguration
-        )
+        translateClientConfiguration.httpClientEngine = .userAgentEngine
 
         let awsTranslateClient = TranslateClient(config: translateClientConfiguration)
 
         let pollyClientConfiguration = try PollyClient.PollyClientConfiguration(
-            region: configuration.convert.region,
-            credentialsProvider: credentialsProvider
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+            region: configuration.convert.region
         )
-        pollyClientConfiguration.httpClientEngine = .userAgentEngine(
-            for: pollyClientConfiguration
-        )
+        pollyClientConfiguration.httpClientEngine = .userAgentEngine
         let awsPollyClient = PollyClient(config: pollyClientConfiguration)
 
         let comprehendClientConfiguration = try ComprehendClient.ComprehendClientConfiguration(
-            region: configuration.convert.region,
-            credentialsProvider: credentialsProvider
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+            region: configuration.convert.region
         )
-        comprehendClientConfiguration.httpClientEngine = .userAgentEngine(
-            for: comprehendClientConfiguration
-        )
+        comprehendClientConfiguration.httpClientEngine = .userAgentEngine
 
         let awsComprehendClient = ComprehendClient(config: comprehendClientConfiguration)
 
         let rekognitionClientConfiguration = try RekognitionClient.RekognitionClientConfiguration(
-            region: configuration.identify.region,
-            credentialsProvider: credentialsProvider
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+            region: configuration.identify.region
         )
-        rekognitionClientConfiguration.httpClientEngine = .userAgentEngine(
-            for: rekognitionClientConfiguration
-        )
+        rekognitionClientConfiguration.httpClientEngine = .userAgentEngine
         let awsRekognitionClient = RekognitionClient(config: rekognitionClientConfiguration)
 
         let textractClientConfiguration = try TextractClient.TextractClientConfiguration(
-            region: configuration.identify.region,
-            credentialsProvider: credentialsProvider
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+            region: configuration.identify.region
         )
-        textractClientConfiguration.httpClientEngine = .userAgentEngine(
-            for: textractClientConfiguration
-        )
+        textractClientConfiguration.httpClientEngine = .userAgentEngine
         let awsTextractClient = TextractClient(config: textractClientConfiguration)
 
         let awsTranscribeStreamingAdapter = AWSTranscribeStreamingAdapter(
-            credentialsProvider: credentialsProvider,
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
             region: configuration.convert.region
         )
 

@@ -39,10 +39,8 @@ extension UserAgentSettingClientEngine: HTTPClient {
 
 @_spi(PluginHTTPClientEngine)
 extension HTTPClient where Self == UserAgentSettingClientEngine {
-    public static func userAgentEngine(
-        for configuration: AWSClientConfiguration<some AWSServiceSpecificConfiguration>
-    ) -> Self {
-        let baseClientEngine = baseClientEngine(for: configuration)
+    public static var userAgentEngine: Self {
+        let baseClientEngine = baseClientEngine()
         return self.init(target: baseClientEngine)
     }
 }

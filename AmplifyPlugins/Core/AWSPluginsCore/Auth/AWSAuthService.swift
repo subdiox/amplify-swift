@@ -13,7 +13,7 @@ public class AWSAuthService: AWSAuthServiceBehavior {
 
     public init() {}
 
-    public func getCredentialsProvider() -> CredentialsProviding {
+    public func getAWSCredentialIdentityResolver() -> any AWSCredentialIdentityResolver {
         return AmplifyAWSCredentialsProvider()
     }
 

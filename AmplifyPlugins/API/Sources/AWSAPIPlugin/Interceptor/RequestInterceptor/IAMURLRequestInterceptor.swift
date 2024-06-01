@@ -65,7 +65,7 @@ struct IAMURLRequestInterceptor: URLRequestInterceptor {
 
         guard let urlRequest = try await AmplifyAWSSignatureV4Signer().sigV4SignedRequest(
             requestBuilder: requestBuilder,
-            credentialsProvider: iamCredentialsProvider.getCredentialsProvider(),
+            awsCredentialIdentityResolver: iamCredentialsProvider.getAWSCredentialIdentityResolver(),
             signingName: signingName,
             signingRegion: region,
             date: Date()

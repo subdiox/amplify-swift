@@ -13,7 +13,7 @@ import AwsCommonRuntimeKit
 
 public protocol AWSSignatureV4Signer {
     func sigV4SignedRequest(requestBuilder: SdkHttpRequestBuilder,
-                            credentialsProvider: AWSClientRuntime.CredentialsProviding,
+                            awsCredentialIdentityResolver: any AWSCredentialIdentityResolver,
                             signingName: Swift.String,
                             signingRegion: Swift.String,
                             date: ClientRuntime.Date) async throws -> SdkHttpRequest?
@@ -24,12 +24,12 @@ public class AmplifyAWSSignatureV4Signer: AWSSignatureV4Signer {
     }
 
     public func sigV4SignedRequest(requestBuilder: SdkHttpRequestBuilder,
-                                   credentialsProvider: AWSClientRuntime.CredentialsProviding,
+                                   awsCredentialIdentityResolver: any AWSCredentialIdentityResolver,
                                    signingName: Swift.String,
                                    signingRegion: Swift.String,
                                    date: ClientRuntime.Date) async throws -> SdkHttpRequest? {
         do {
-            let credentials = try await credentialsProvider.getCredentials()
+            let credentials = try await awsCredentialIdentityResolver.getIdentity()
 
             let flags = SigningFlags(useDoubleURIEncode: true,
                                      shouldNormalizeURIPath: true,

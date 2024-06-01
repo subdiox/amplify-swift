@@ -10,8 +10,6 @@ import ClientRuntime
 import AWSClientRuntime
 
 @_spi(PluginHTTPClientEngine)
-public func baseClientEngine(
-    for configuration: AWSClientConfiguration<some AWSServiceSpecificConfiguration>
-) -> HTTPClient {
+public func baseClientEngine() -> HTTPClient {
     return FoundationClientEngine()
 }

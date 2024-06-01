@@ -25,7 +25,7 @@ final class AWSCloudWatchLoggingSessionController {
     private let logGroupName: String
     private let region: String
     private let localStoreMaxSizeInMB: Int
-    private let credentialsProvider: CredentialsProviding
+    private let awsCredentialIdentityResolver: any AWSCredentialIdentityResolver
     private let authentication: AuthCategoryUserBehavior
     private let category: String
     private var session: AWSCloudWatchLoggingSession?
@@ -59,7 +59,7 @@ final class AWSCloudWatchLoggingSessionController {
     }
 
     /// - Tag: CloudWatchLogSessionController.init
-    init(credentialsProvider: CredentialsProviding,
+    init(awsCredentialIdentityResolver: some AWSCredentialIdentityResolver,
          authentication: AuthCategoryUserBehavior,
          logFilter: AWSCloudWatchLoggingFilterBehavior,
          category: String,
@@ -71,7 +71,7 @@ final class AWSCloudWatchLoggingSessionController {
          userIdentifier: String?,
          networkMonitor: LoggingNetworkMonitor
     ) {
-        self.credentialsProvider = credentialsProvider
+        self.awsCredentialIdentityResolver = awsCredentialIdentityResolver
         self.authentication = authentication
         self.logFilter = logFilter
         self.category = category
@@ -105,11 +105,11 @@ final class AWSCloudWatchLoggingSessionController {
         if self.client == nil {
             // TODO: FrameworkMetadata Replacement
             let configuration = try CloudWatchLogsClient.CloudWatchLogsClientConfiguration(
-                region: region,
-                credentialsProvider: credentialsProvider
+                awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+                region: region
             )
 
-            configuration.httpClientEngine = .userAgentEngine(for: configuration)
+            configuration.httpClientEngine = .userAgentEngine
 
             self.client = CloudWatchLogsClient(config: configuration)
         }

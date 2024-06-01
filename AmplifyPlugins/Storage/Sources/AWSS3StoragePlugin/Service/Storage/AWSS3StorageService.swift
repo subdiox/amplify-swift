@@ -58,20 +58,20 @@ class AWSS3StorageService: AWSS3StorageServiceBehavior, StorageServiceProxy {
                      sessionConfiguration: URLSessionConfiguration? = nil,
                      delegateQueue: OperationQueue? = nil,
                      logger: Logger = storageLogger) throws {
-        let credentialsProvider = authService.getCredentialsProvider()
+        let awsCredentialIdentityResolver = authService.getAWSCredentialIdentityResolver()
         let clientConfig = try S3Client.S3ClientConfiguration(
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
             region: region,
-            credentialsProvider: credentialsProvider,
             signingRegion: region
         )
 
         if var httpClientEngineProxy = httpClientEngineProxy {
-            httpClientEngineProxy.target = baseClientEngine(for: clientConfig)
+            httpClientEngineProxy.target = baseClientEngine()
             clientConfig.httpClientEngine = UserAgentSettingClientEngine(
                 target: httpClientEngineProxy
             )
         } else {
-            clientConfig.httpClientEngine = .userAgentEngine(for: clientConfig)
+            clientConfig.httpClientEngine = .userAgentEngine
         }
 
         let s3Client = S3Client(config: clientConfig)

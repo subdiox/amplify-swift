@@ -18,9 +18,7 @@ extension UploadPartInput {
             .withServiceName(value: serviceName)
             .withOperation(value: "uploadPart")
             .withIdempotencyTokenGenerator(value: config.idempotencyTokenGenerator)
-            .withLogger(value: config.logger)
             .withPartitionID(value: config.partitionID)
-            .withCredentialsProvider(value: config.credentialsProvider)
             .withRegion(value: config.region)
             .withSigningName(value: "s3")
             .withSigningRegion(value: config.signingRegion)
@@ -32,7 +30,7 @@ extension UploadPartInput {
         operation.buildStep.intercept(
             position: .before,
             middleware: EndpointResolverMiddleware<UploadPartOutput>(
-                endpointResolver: config.serviceSpecific.endpointResolver,
+                endpointResolver: config.endpointResolver,
                 endpointParams: config.endpointParams(withBucket: input.bucket)
             )
         )
@@ -42,7 +40,7 @@ extension UploadPartInput {
             position: .after, 
             middleware: ClientRuntime.RetryMiddleware<ClientRuntime.DefaultRetryStrategy, AWSClientRuntime.AWSRetryErrorInfoProvider, UploadPartOutput>(
                 options: config.retryStrategyOptions))
-        let sigv4Config = AWSClientRuntime.SigV4Config(
+        let sigv4Config = AWSSigningConfig(
             signatureType: .requestQueryParams,
             useDoubleURIEncode: false,
             expiration: expiration,

@@ -6,14 +6,15 @@
 //
 
 import AWSClientRuntime
+import ClientRuntime
 import Foundation
 
-class MockCredentialsProvider: CredentialsProviding {
-    func getCredentials() async throws -> AWSCredentials {
-        return AWSCredentials(
+class MockCredentialIdentityResolver: AWSCredentialIdentityResolver {
+    func getIdentity(identityProperties: Attributes? = nil) async throws -> AWSCredentialIdentity {
+        return AWSCredentialIdentity(
             accessKey: "accessKey",
             secret: "secret",
-            expirationTimeout: Date().addingTimeInterval(1000)
+            expiration: Date().addingTimeInterval(1000)
         )
     }
 }

@@ -14,7 +14,7 @@ import ClientRuntime
 public class DefaultRemoteLoggingConstraintsProvider: RemoteLoggingConstraintsProvider {
     public let refreshIntervalInSeconds: Int
     private let endpoint: URL
-    private let credentialProvider: CredentialsProviding?
+    private let awsCredentialIdentityResolver: (any AWSCredentialIdentityResolver)?
     private let region: String
     private let loggingConstraintsLocalStore: LoggingConstraintsLocalStore = UserDefaults.standard
 
@@ -31,14 +31,14 @@ public class DefaultRemoteLoggingConstraintsProvider: RemoteLoggingConstraintsPr
     public init(
          endpoint: URL,
          region: String,
-         credentialProvider: CredentialsProviding? = nil,
+         awsCredentialIdentityResolver: (any AWSCredentialIdentityResolver)? = nil,
          refreshIntervalInSeconds: Int = 1200
     ) {
         self.endpoint = endpoint
-        if credentialProvider == nil {
-            self.credentialProvider = AWSAuthService().getCredentialsProvider()
+        if awsCredentialIdentityResolver == nil {
+            self.awsCredentialIdentityResolver = AWSAuthService().getAWSCredentialIdentityResolver()
         } else {
-            self.credentialProvider = credentialProvider
+            self.awsCredentialIdentityResolver = awsCredentialIdentityResolver
         }
         self.region = region
         self.refreshIntervalInSeconds = refreshIntervalInSeconds
@@ -100,13 +100,13 @@ public class DefaultRemoteLoggingConstraintsProvider: RemoteLoggingConstraintsPr
             .withHeaders(.init(request.allHTTPHeaderFields ?? [:]))
             .withBody(.data(request.httpBody))
 
-        guard let credentialProvider = self.credentialProvider else {
+        guard let awsCredentialIdentityResolver else {
             return request
         }
 
         guard let urlRequest = try await AmplifyAWSSignatureV4Signer().sigV4SignedRequest(
             requestBuilder: requestBuilder,
-            credentialsProvider: credentialProvider,
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
             signingName: "execute-api",
             signingRegion: region,
             date: Date()

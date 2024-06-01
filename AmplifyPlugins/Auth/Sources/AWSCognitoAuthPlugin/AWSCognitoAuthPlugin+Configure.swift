@@ -92,16 +92,16 @@ extension AWSCognitoAuthPlugin {
         case .userPools(let userPoolConfig), .userPoolsAndIdentityPools(let userPoolConfig, _):
             let configuration = try CognitoIdentityProviderClient.CognitoIdentityProviderClientConfiguration(
                 region: userPoolConfig.region,
-                serviceSpecific: .init(endpointResolver: userPoolConfig.endpoint?.resolver)
+                endpointResolver: userPoolConfig.endpoint?.resolver
             )
 
             if var httpClientEngineProxy = httpClientEngineProxy {
-                httpClientEngineProxy.target = baseClientEngine(for: configuration)
+                httpClientEngineProxy.target = baseClientEngine()
                 configuration.httpClientEngine = UserAgentSettingClientEngine(
                     target: httpClientEngineProxy
                 )
             } else {
-                configuration.httpClientEngine = .userAgentEngine(for: configuration)
+                configuration.httpClientEngine = .userAgentEngine
             }
 
             if let requestTimeout = networkPreferences?.timeoutIntervalForRequest {
@@ -124,7 +124,7 @@ extension AWSCognitoAuthPlugin {
             let configuration = try CognitoIdentityClient.CognitoIdentityClientConfiguration(
                 region: identityPoolConfig.region
             )
-            configuration.httpClientEngine = .userAgentEngine(for: configuration)
+            configuration.httpClientEngine = .userAgentEngine
 
             if let requestTimeout = networkPreferences?.timeoutIntervalForRequest {
                 configuration.httpClientConfiguration = HttpClientConfiguration(connectTimeout: requestTimeout)

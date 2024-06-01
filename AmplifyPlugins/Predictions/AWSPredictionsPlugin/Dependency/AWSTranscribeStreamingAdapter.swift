@@ -22,11 +22,11 @@ class AWSTranscribeStreamingAdapter: AWSTranscribeStreamingBehavior {
         let mediaSampleRateHertz: Int
     }
 
-    let credentialsProvider: CredentialsProviding
+    let awsCredentialIdentityResolver: any AWSCredentialIdentityResolver
     let region: String
 
-    init(credentialsProvider: CredentialsProviding, region: String) {
-        self.credentialsProvider = credentialsProvider
+    init(awsCredentialIdentityResolver: some AWSCredentialIdentityResolver, region: String) {
+        self.awsCredentialIdentityResolver = awsCredentialIdentityResolver
         self.region = region
     }
 
@@ -150,5 +150,231 @@ class AWSTranscribeStreamingAdapter: AWSTranscribeStreamingBehavior {
         webSocket.open(url: signedURL)
 
         return stream
+    }
+}
+
+extension TranscribeStreamingClientTypes.TranscriptEvent: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case transcript
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            transcript: try container.decode(TranscribeStreamingClientTypes.Transcript?.self, forKey: .transcript)
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(transcript, forKey: .transcript)
+    }
+}
+
+extension TranscribeStreamingClientTypes.Transcript: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case results
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            results: try container.decode([TranscribeStreamingClientTypes.Result]?.self, forKey: .results)
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(results, forKey: .results)
+    }
+}
+
+extension TranscribeStreamingClientTypes.Result: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case alternatives
+        case channelId
+        case endTime
+        case isPartial
+        case languageCode
+        case languageIdentification
+        case resultId
+        case startTime
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            alternatives: try container.decode([TranscribeStreamingClientTypes.Alternative]?.self, forKey: .alternatives),
+            channelId: try container.decode(String?.self, forKey: .channelId),
+            endTime: try container.decode(Double.self, forKey: .endTime),
+            isPartial: try container.decode(Bool.self, forKey: .isPartial),
+            languageCode: try container.decode(TranscribeStreamingClientTypes.LanguageCode?.self, forKey: .languageCode),
+            languageIdentification: try container.decode([TranscribeStreamingClientTypes.LanguageWithScore]?.self, forKey: .languageIdentification),
+            resultId: try container.decode(String?.self, forKey: .resultId),
+            startTime: try container.decode(Double.self, forKey: .startTime)
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(alternatives, forKey: .alternatives)
+        try container.encode(channelId, forKey: .channelId)
+        try container.encode(endTime, forKey: .endTime)
+        try container.encode(isPartial, forKey: .isPartial)
+        try container.encode(languageCode, forKey: .languageCode)
+        try container.encode(languageIdentification, forKey: .languageIdentification)
+        try container.encode(resultId, forKey: .resultId)
+        try container.encode(startTime, forKey: .startTime)
+    }
+}
+
+extension TranscribeStreamingClientTypes.Alternative: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case entities
+        case items
+        case transcript
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            entities: try container.decode([TranscribeStreamingClientTypes.Entity]?.self, forKey: .entities),
+            items: try container.decode([TranscribeStreamingClientTypes.Item]?.self, forKey: .items),
+            transcript: try container.decode(String?.self, forKey: .transcript)
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(entities, forKey: .entities)
+        try container.encode(items, forKey: .items)
+        try container.encode(transcript, forKey: .transcript)
+    }
+}
+
+extension TranscribeStreamingClientTypes.Entity: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case category
+        case confidence
+        case content
+        case endTime
+        case startTime
+        case type
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            category: try container.decode(String?.self, forKey: .category),
+            confidence: try container.decode(Double?.self, forKey: .confidence),
+            content: try container.decode(String?.self, forKey: .content),
+            endTime: try container.decode(Double.self, forKey: .endTime),
+            startTime: try container.decode(Double.self, forKey: .startTime),
+            type: try container.decode(String?.self, forKey: .type)
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(category, forKey: .category)
+        try container.encode(confidence, forKey: .confidence)
+        try container.encode(content, forKey: .content)
+        try container.encode(endTime, forKey: .endTime)
+        try container.encode(startTime, forKey: .startTime)
+        try container.encode(type, forKey: .type)
+    }
+}
+
+extension TranscribeStreamingClientTypes.Item: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case confidence
+        case content
+        case endTime
+        case speaker
+        case stable
+        case startTime
+        case type
+        case vocabularyFilterMatch
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            confidence: try container.decode(Double?.self, forKey: .confidence),
+            content: try container.decode(String?.self, forKey: .content),
+            endTime: try container.decode(Double.self, forKey: .endTime),
+            speaker: try container.decode(String?.self, forKey: .speaker),
+            stable: try container.decode(Bool?.self, forKey: .stable),
+            startTime: try container.decode(Double.self, forKey: .startTime),
+            type: try container.decode(TranscribeStreamingClientTypes.ItemType?.self, forKey: .type),
+            vocabularyFilterMatch: try container.decode(Bool.self, forKey: .vocabularyFilterMatch)
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(confidence, forKey: .confidence)
+        try container.encode(content, forKey: .content)
+        try container.encode(endTime, forKey: .endTime)
+        try container.encode(speaker, forKey: .speaker)
+        try container.encode(stable, forKey: .stable)
+        try container.encode(startTime, forKey: .startTime)
+        try container.encode(type, forKey: .type)
+        try container.encode(vocabularyFilterMatch, forKey: .vocabularyFilterMatch)
+    }
+}
+
+extension TranscribeStreamingClientTypes.ItemType: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let rawValue = try container.decode(String.self, forKey: .rawValue)
+        self = TranscribeStreamingClientTypes.ItemType(rawValue: rawValue) ?? .sdkUnknown(rawValue)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.rawValue, forKey: .rawValue)
+    }
+}
+
+extension TranscribeStreamingClientTypes.LanguageCode: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case rawValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let rawValue = try container.decode(String.self, forKey: .rawValue)
+        self = TranscribeStreamingClientTypes.LanguageCode(rawValue: rawValue) ?? .sdkUnknown(rawValue)
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.rawValue, forKey: .rawValue)
+    }
+}
+
+extension TranscribeStreamingClientTypes.LanguageWithScore: Codable {
+    private enum CodingKeys: String, CodingKey {
+        case languageCode
+        case score
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            languageCode: try container.decode(TranscribeStreamingClientTypes.LanguageCode?.self, forKey: .languageCode),
+            score: try container.decode(Double.self, forKey: .score)
+        )
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(languageCode, forKey: .languageCode)
+        try container.encode(score, forKey: .score)
     }
 }

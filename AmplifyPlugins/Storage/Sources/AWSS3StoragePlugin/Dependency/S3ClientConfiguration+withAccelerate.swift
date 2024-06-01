@@ -18,7 +18,7 @@ extension S3Client.S3ClientConfiguration {
         // if `shouldAccelerate` isn't `nil` and
         // is equal to the exisiting config's `serviceSpecific.accelerate
         // we can avoid allocating a new configuration object.
-        if shouldAccelerate == serviceSpecific.accelerate {
+        if shouldAccelerate == accelerate {
             return self
         }
 
@@ -27,24 +27,19 @@ extension S3Client.S3ClientConfiguration {
         // it at compile time - so we have to unwrap.
         guard let region else { return self }
 
-        // `S3Client.ServiceSpecificConfiguration` is a struct
-        // so we're copying by value here.
-        var serviceSpecific = serviceSpecific
-        serviceSpecific.accelerate = shouldAccelerate
-
         // `S3Client.S3ClientConfiguration` is a `class` so we need to make
         // a deep copy here as not to change the value of the existing base
         // configuration.
         let copy = try S3Client.S3ClientConfiguration(
-            region: region,
-            credentialsProvider: credentialsProvider,
-            endpoint: endpoint,
-            serviceSpecific: serviceSpecific,
-            signingRegion: signingRegion,
-            useDualStack: useDualStack,
             useFIPS: useFIPS,
-            retryMode: awsRetryMode,
-            appID: appID
+            useDualStack: useDualStack,
+            appID: appID,
+            awsCredentialIdentityResolver: awsCredentialIdentityResolver,
+            awsRetryMode: awsRetryMode,
+            region: region,
+            signingRegion: signingRegion,
+            accelerate: shouldAccelerate,
+            endpoint: endpoint
         )
 
         return copy
